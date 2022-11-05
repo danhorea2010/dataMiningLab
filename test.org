@@ -1,0 +1,34 @@
+#+title: Data mining course 2
+
+* Slide-urile o sa fie pe teams
+
+
+* Ce este data mining?
+- extragerea cunostiintelor din seturi mari de date
+- termenul vine de la gold mining
+- nu trebe sa traduci data mining
+- o inceput cu identificarea numerelor de telefon si reclame personalizate
+
+* De ce?
+- acces la volum mare de date
+- crescut importanta recent
+
+* Clasificarea clientiilor pe baza de profile ( pentru reclame si produse ) -> clustering
+
+* Data mining
+- o crescut mult dupa 9/11
+- descopera teroristi dupa comportament atipic, puncte comune
+- finding unsuspected relationships
+- se regasesc technici de AI and stuff
+- foarte raspandit ( si in sport )
+
+* Clasificare
+- pune eticheta
+- ex. cand decid banciile cui sa le dea credit
+
+* Technici de data mining
+1. Asocierea
+   - poate fi modelata ca o problema de clasificare
+
+* Arborii de decizie
+- foarte asemanator cu un if
