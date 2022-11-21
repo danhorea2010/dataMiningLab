@@ -1,3 +1,5 @@
+import re
+
 import requests
 
 class GamePlayer:
@@ -12,9 +14,16 @@ class Game:
 
     def extract_game(response):
         game = Game()
-
-        game.whitePlayer = GamePlayer(response["white"]["rating"],response["white"]["result"])
-        game.blackPlayer = GamePlayer(response["black"]["rating"],response["black"]["result"])
+        game.whitePlayer = GamePlayer(response["white"]["rating"], response["white"]["result"])
+        game.blackPlayer = GamePlayer(response["black"]["rating"], response["black"]["result"])
+        # split the metadata by new line
+        movesInPGNFormat = response["pgn"].split("\n")[-2]
+        # split the moves string
+        movesInNormalFormat = list(map(lambda move : re.sub("{.*", "", move), movesInPGNFormat.split("} ")))
+        # remove the final score
+        movesInNormalFormat.pop()
+        # remove the remaning junk from moves
+        game.move_list = list(map(lambda move: re.sub("\d+\.(\.\.)?", "", move).strip(), movesInNormalFormat))
 
         return game
 
@@ -87,6 +96,7 @@ def main():
     for game in x:
         print(vars(game.whitePlayer))
         print(vars(game.blackPlayer))
+        print(game.move_list)
 
 
 
