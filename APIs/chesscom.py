@@ -59,12 +59,14 @@ class ChessAPI(BaseAPI):
     def get_games(self, game_info, verifier: AbstractVerifier = AlwaysOkVerifier) -> List[Game]:
         player_name = game_info["player_name"]
         results = []
-        raw_games = requests.get(
+        raw_game_urls = requests.get(
             f"{self.base_endpoint}{self.player_endpoint}{player_name}/{self.games_endpoint}{self.archives_endpoint}").json()["archives"]
-        for raw_game in raw_games:
-            game = self.get_game(raw_game, self.move_extractor, self.player_extractor)
-            if verifier.is_game_accepted(game):
-                results.append(game)
+        for raw_game_url in raw_game_urls:
+            raw_games = requests.get(raw_game_url).json()["games"]
+            for raw_game in raw_games:
+                game = self.get_game(raw_game, self.move_extractor, self.player_extractor)
+                if verifier.is_game_accepted(game):
+                    results.append(game)
         return results
 
     def get_white_in_game(self, game_info, extractor: GamePlayerExtractor) -> GamePlayer:

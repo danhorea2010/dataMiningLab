@@ -6,10 +6,12 @@ from models.game import Game
 class AbstractVerifier(ABC):
     @classmethod
     @abstractmethod
-    def is_game_accepted(self, game: Game) -> bool:
+    def is_game_accepted(cls, game: Game) -> bool:
         pass
 
 
 class AlwaysOkVerifier(AbstractVerifier):
-    def is_game_accepted(self, game: Game) -> bool:
+
+    @classmethod
+    def is_game_accepted(cls, game: Game) -> bool:
         return True
