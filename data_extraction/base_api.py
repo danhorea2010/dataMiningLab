@@ -13,6 +13,7 @@ from models.player import PlayerStats
 class BaseAPI(ABC):
     def get_game(self, game_info, move_extractor: MovesExtractor, player_extractor: GamePlayerExtractor) -> Game:
         return Game(
+            '',
             self.get_white_in_game(game_info, player_extractor),
             self.get_black_in_game(game_info, player_extractor),
             self.get_moves(game_info, move_extractor)

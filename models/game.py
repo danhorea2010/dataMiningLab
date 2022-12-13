@@ -2,9 +2,13 @@ from typing import List
 
 
 class GamePlayer:
-    def __init__(self, rating, result):
+    name: str
+    rating: int
+
+    def __init__(self, rating, result, name):
         self.rating = rating
         self.result = result
+        self.name = name
 
 
 class Game:

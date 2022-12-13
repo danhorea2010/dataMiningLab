@@ -21,7 +21,7 @@ def get_or_default(response, to_get) -> int:
 
 class ChessComPlayerExtractor(GamePlayerExtractor):
     def get_game_player(self, game_info) -> GamePlayer:
-        return GamePlayer(game_info["rating"], game_info["result"])
+        return GamePlayer(game_info["rating"], game_info["result"], game_info["username"])
 
 
 class ChessComPlayerMovesExtractor(MovesExtractor):
@@ -55,6 +55,13 @@ class ChessAPI(BaseAPI):
 
     def get_moves(self, game_info, extractor: MovesExtractor) -> List[str]:
         return extractor.get_moves(game_info)
+
+    def get_game(self, game_info, move_extractor: MovesExtractor, player_extractor: GamePlayerExtractor) -> Game:
+        return Game(
+            self.get_white_in_game(game_info, player_extractor),
+            self.get_black_in_game(game_info, player_extractor),
+            self.get_moves(game_info, move_extractor)
+        )
 
     def get_games(self, game_info, verifier: AbstractVerifier = AlwaysOkVerifier) -> List[Game]:
         player_name = game_info["player_name"]
