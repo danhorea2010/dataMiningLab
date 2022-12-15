@@ -65,10 +65,16 @@ def print_game(game: Game):
     print(game.black.rating)
 
 
+# def main():
+#     data1000_1200 = get_data(50, 1000, 1200)
+#     with open('data/data1000_1200.pickle', 'wb') as file:
+#         pickle.dump(data1000_1200, file)
+#         print("done")
+
 def main():
-    data3 = get_data(100, 1201, 1400)
-    with open('data/test.pickle', 'wb') as file:
-        pickle.dump(data3, file)
+    data1200_1400 = get_data(50, 1200, 1400)
+    with open('data/data1200_1400.pickle', 'wb') as file:
+        pickle.dump(data1200_1400, file)
         print("done")
 
 if __name__ == "__main__":
