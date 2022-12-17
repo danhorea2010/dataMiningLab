@@ -3,6 +3,7 @@ import pickle
 from requests import JSONDecodeError
 
 from APIs.chesscom import ChessAPI
+from data_clustering.clustering_functions import EuclidianDistance, KMeansClustering
 from models.game import Game, GamePlayer
 from models.player import PlayerStats
 
@@ -71,11 +72,43 @@ def print_game(game: Game):
 #         pickle.dump(data1000_1200, file)
 #         print("done")
 
+
+def read_from_pickle(path):
+    with open(path, 'rb') as file:
+        try:
+            while True:
+                yield pickle.load(file)
+        except EOFError:
+            pass
+
 def main():
-    data1200_1400 = get_data(50, 1200, 1400)
-    with open('data/data1200_1400.pickle', 'wb') as file:
-        pickle.dump(data1200_1400, file)
-        print("done")
+    all_move_list = []
+    #data1200_1400 = get_data(50, 1200, 1400)
+    #with open('data/data1200_1400.pickle', 'wb') as file:
+    #    pickle.dump(data1200_1400, file)
+    #    print("done")
+    for item in read_from_pickle('data/data1200_1400.pickle'):
+        for game in item:
+            all_move_list.extend(game.move_list)        
+
+    # Test Chess moves to cluster (works for these but need to extend the format it seems)
+    moves = ["E1", "B2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]
+
+
+    #print(all_move_list)
+    # Number of clusters
+    k = 3
+
+    # Perform k-means clustering
+    kMeans = KMeansClustering(EuclidianDistance())
+    clusters = kMeans.cluster(moves, k)
+    #clusters = kMeans.cluster(all_move_list, k)
+
+    # Print the clusters
+    for i, cluster in enumerate(clusters):
+        print(f"Cluster {i+1}: {cluster}")
+
+
 
 if __name__ == "__main__":
     main()
