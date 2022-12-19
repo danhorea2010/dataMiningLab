@@ -7,13 +7,6 @@ import copy
 from data_clustering.clustering_convertions import ChessConverter
 from data_clustering.mean import Mean
 
-
-# Function that receives a list of chess moves and returns a list of centroids
-ClusteringStategyFunction = Callable[[list[tuple[int, int]]], list[float]]
-
-# Function that receives 2 chess moves and returns their difference
-ChessDistanceFunction = Callable[[tuple[int,int], tuple[int,int]], float]
-
 class Distance(ABC):
     @classmethod
     @abstractmethod
@@ -41,21 +34,25 @@ class ManhattanDistance(Distance):
 class EuclidianDistance(Distance):
     def get_distance(self, first_move: tuple[int,int], second_move: tuple[int,int]) -> float:
         """Computes the Euclidean distance between two points (x, y)."""
+        #print("DISTANCE: " + str(first_move) + " . " + str(second_move))
         if len(first_move) == 2:
             # The piece is not specified in the coordinate tuple
             x1, y1 = first_move
             x2, y2 = second_move
-            return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+            #return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+            return (x1 - x2) ** 2 + (y1-y2) ** 2
         elif len(second_move) != 2:
             # The piece is specified in the coordinate tuple
             index_a, x1, y1 = first_move
             index_b, x2, y2 = second_move
-            return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (index_a - index_b) ** 2)
+            #return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (index_a - index_b) ** 2)
+            return (x1 - x2) ** 2 + (y1-y2) ** 2 + (index_a - index_b) ** 2
         else:
             # Off case that maybe should not be an off case...
             _, x1, y1 = first_move
             x2, y2 = second_move
-            return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+            #return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+            return (x1-x2) ** 2 + (y1-y2) ** 2
    
 class KMeansClustering(Clustering):
 
@@ -90,7 +87,8 @@ class KMeansClustering(Clustering):
             centroids.append(random.choices(coords, weights=prob)[0])
 
         # Iterate until convergence or until max_iterations is reached
-        for _ in range(max_iterations):
+        for i in range(max_iterations):
+            #print("ITERATION: " + str(i))
             clusters = [[] for i in range(number_of_clusters)]
             # Assign each point to the closest centroid
             for coord in coords:

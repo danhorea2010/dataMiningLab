@@ -92,7 +92,7 @@ def main():
             all_move_list.extend(game.move_list)        
 
     # Test Chess moves to cluster (works for these but need to extend the format it seems)
-    moves = ["E1", "B2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]
+    #moves = ["E1", "B2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]
 
 
     #print(all_move_list)
@@ -101,8 +101,10 @@ def main():
 
     # Perform k-means clustering
     kMeans = KMeansClustering(EuclidianDistance())
-    clusters = kMeans.cluster(moves, k)
-    #clusters = kMeans.cluster(all_move_list, k)
+    #clusters = kMeans.cluster(moves, k)
+    clusters = kMeans.cluster(all_move_list, k)
+
+
 
     # Print the clusters
     for i, cluster in enumerate(clusters):
