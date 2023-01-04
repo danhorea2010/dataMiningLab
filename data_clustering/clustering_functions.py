@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Tuple, List
 from abc import abstractmethod, ABC
 import math
 import random
@@ -10,29 +10,29 @@ from data_clustering.mean import Mean
 class Distance(ABC):
     @classmethod
     @abstractmethod
-    def get_distance(first_move: tuple[int,int], second_move: tuple[int,int]) -> float:
+    def get_distance(first_move: Tuple[int,int], second_move: Tuple[int, int]) -> float:
         pass
 
 class Clustering(ABC):
     @classmethod
     @abstractmethod
-    def cluster(move_list: list[tuple[int,int]], number_of_clusters: int) -> list[float]:
+    def cluster(move_list: List[Tuple[int, int]], number_of_clusters: int) -> List[float]:
         pass
 
 class ChebyshevDistance(Distance):
-    def get_distance(first_move: tuple[int,int], second_move: tuple[int,int]) -> float:
+    def get_distance(first_move: Tuple[int, int], second_move: Tuple[int, int]) -> float:
         diff_rank = abs(first_move[0] - second_move[0])
         diff_file = abs(first_move[1] - second_move[1])
         return max(diff_rank, diff_file)
 
 class ManhattanDistance(Distance):
-     def get_distance(first_move: tuple[int,int], second_move: tuple[int,int]) -> float:
+     def get_distance(first_move: Tuple[int,int], second_move: Tuple[int,int]) -> float:
         diff_rank = abs(first_move[0] - second_move[0])
         diff_file = abs(first_move[1] - second_move[1])
         return (diff_rank+ diff_file)
 
 class EuclidianDistance(Distance):
-    def get_distance(self, first_move: tuple[int,int], second_move: tuple[int,int]) -> float:
+    def get_distance(self, first_move: Tuple[int,int], second_move: Tuple[int,int]) -> float:
         """Computes the Euclidean distance between two points (x, y)."""
         #print("DISTANCE: " + str(first_move) + " . " + str(second_move))
         if len(first_move) == 2:
@@ -59,7 +59,7 @@ class KMeansClustering(Clustering):
     def __init__(self, distance) -> None:
         self.Distance = distance
 
-    def cluster(self, moves: list[tuple[int,int]], number_of_clusters: int) -> list[float]:
+    def cluster(self, moves: List[Tuple[int,int]], number_of_clusters: int) -> List[float]:
         max_iterations = 10_000
         # Convert the moves to coordinates
         coords = [ChessConverter.chess_move_to_coord(move) for move in moves]
