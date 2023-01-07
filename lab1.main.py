@@ -101,15 +101,15 @@ def calculate_height(moves:List[str]) -> float:
             height+=1
         else:
             if move[0] == "N":
-                height += 0.03
+                height += 1/15
             elif  move[0] == "Q":
-                height += 0.1
+                height += 1/5
             elif  move[0] == "R":
-                height += 0.5
+                height += 1/10
             elif  move[0] == "B":
-                height += 0.5
+                height += 1/15
             elif  move[0] == "K":
-                height += 0.15
+                height += 1/3
             else:
                 print(move[0])
                 exit()
@@ -118,14 +118,14 @@ def main():
 
     game_moves = []
 
-    # for game in read_from_pickle('data/data1000_1200.pickle'):
-    #     game_moves.append(game.move_list)
+    for game in read_from_pickle('data/data1000_1200.pickle'):
+        game_moves.append(game.move_list)
     #
     # for game in read_from_pickle('data/data1200_1400.pickle'):
     #     game_moves.append(game.move_list)
 
-    for game in read_from_pickle('data/data1400_1600.pickle'):
-        game_moves.append(game.move_list)
+    # for game in read_from_pickle('data/data1400_1600.pickle'):
+    #     game_moves.append(game.move_list)
 
     # Number of clusters
     k = 3
