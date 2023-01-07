@@ -1,12 +1,18 @@
+import math
 import pickle
+from collections import deque
+from typing import List
 
 from requests import JSONDecodeError
 
 from APIs.chesscom import ChessAPI
+from data_clustering.clustering_convertions import ChessConverter
 from data_clustering.clustering_functions import EuclidianDistance, KMeansClustering
 from models.game import Game, GamePlayer
 from models.player import PlayerStats
-
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 def get_games_for_player(player: str):
     return ChessAPI().get_games({"player_name": player})
@@ -79,47 +85,69 @@ def print_game(game: Game):
 #    pickle.dump(data1200_1400, file)
 #    print("done")
 
-def main():
-    data1400_1600 = get_data(50, 1400, 1600)
-    with open('data/data1400_1600.pickle', 'wb') as file:
-        pickle.dump(data1400_1600, file)
-        print("done")
+# def main():
+#     data1400_1600 = get_data(50, 1400, 1600)
+#     with open('data/data1400_1600.pickle', 'wb') as file:
+#         pickle.dump(data1400_1600, file)
+#         print("done")
 
 def read_from_pickle(path):
-    with open(path, 'rb') as file:
-        try:
-            while True:
-                yield pickle.load(file)
-        except EOFError:
-            pass
+    return pd.read_pickle(path)
 
-# def main():
-#     all_move_list = []
-#
-#     for item in read_from_pickle('data/data1200_1400.pickle'):
-#         for game in item:
-#             all_move_list.extend(game.move_list)
-#
-#     # Test Chess moves to cluster (works for these but need to extend the format it seems)
-#     #moves = ["E1", "B2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]
-#
-#
-#     #print(all_move_list)
-#     # Number of clusters
-#     k = 3
-#
-#     # Perform k-means clustering
-#     kMeans = KMeansClustering(EuclidianDistance())
-#     #clusters = kMeans.cluster(moves, k)
-#     clusters = kMeans.cluster(all_move_list, k)
-#
-#
-#
-#     # Print the clusters
-#     for i, cluster in enumerate(clusters):
-#         print(f"Cluster {i+1}: {cluster}")
+def calculate_height(moves:List[str]) -> float:
+    height = 0
+    for move in moves:
+        if move[0].islower():
+            height+=1
+        else:
+            if move[0] == "N":
+                height += 0.03
+            elif  move[0] == "Q":
+                height += 0.1
+            elif  move[0] == "R":
+                height += 0.5
+            elif  move[0] == "B":
+                height += 0.5
+            elif  move[0] == "K":
+                height += 0.15
+            else:
+                print(move[0])
+                exit()
+    return round(height, 2)
+def main():
 
+    game_moves = []
 
+    # for game in read_from_pickle('data/data1000_1200.pickle'):
+    #     game_moves.append(game.move_list)
+    #
+    # for game in read_from_pickle('data/data1200_1400.pickle'):
+    #     game_moves.append(game.move_list)
+
+    for game in read_from_pickle('data/data1400_1600.pickle'):
+        game_moves.append(game.move_list)
+
+    # Number of clusters
+    k = 3
+    converter = ChessConverter()
+    relevantData = []
+    stats = []
+    plt.rcParams["figure.figsize"] = [7.00, 3.50]
+    plt.rcParams["figure.autolayout"] = True
+    coordsx = []
+    coordsy = []
+    for moves in game_moves:
+        if len(moves) < 6:
+            continue
+        white = [moves[0],moves[2],moves[4]]
+        whiteHeight = calculate_height(white)
+        black = [moves[1],moves[3],moves[5]]
+        blackHeight = calculate_height(black)
+        relevantData.append([whiteHeight,blackHeight,white,black])
+        coordsx.append(whiteHeight)
+        coordsy.append(blackHeight)
+    plt.scatter(coordsx, coordsy)
+    plt.show()
 
 if __name__ == "__main__":
     main()
