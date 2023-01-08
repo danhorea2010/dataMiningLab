@@ -1,18 +1,14 @@
-import math
-import pickle
-from collections import deque
 from typing import List
 
+import matplotlib.pyplot as plt
+import pandas as pd
 from requests import JSONDecodeError
 
 from APIs.chesscom import ChessAPI
 from data_clustering.clustering_convertions import ChessConverter
-from data_clustering.clustering_functions import EuclidianDistance, KMeansClustering
 from models.game import Game, GamePlayer
-from models.player import PlayerStats
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+
+# k-means with 3/4/5 and clustering with 5
 
 def get_games_for_player(player: str):
     return ChessAPI().get_games({"player_name": player})
@@ -73,22 +69,28 @@ def print_game(game: Game):
 
 
 # def main():
-#     data1000_1200 = get_data(50, 1000, 1200)
+#     data1000_1200 = get_data(100, 1000, 1200)
 #     with open('data/data1000_1200.pickle', 'wb') as file:
 #         pickle.dump(data1000_1200, file)
 #         print("done")
 
 
 # def main():
-# data1200_1400 = get_data(50, 1200, 1400)
-# with open('data/data1200_1400.pickle', 'wb') as file:
-#    pickle.dump(data1200_1400, file)
-#    print("done")
+#     data1200_1400 = get_data(100, 1200, 1400)
+#     with open('data/data1200_1400.pickle', 'wb') as file:
+#        pickle.dump(data1200_1400, file)
+#        print("done")
 
 # def main():
 #     data1400_1600 = get_data(50, 1400, 1600)
 #     with open('data/data1400_1600.pickle', 'wb') as file:
 #         pickle.dump(data1400_1600, file)
+#         print("done")
+
+# def main():
+#     data1600_1800 = get_data(100, 1600, 1800)
+#     with open('data/data1600_1800.pickle', 'wb') as file:
+#         pickle.dump(data1600_1800, file)
 #         print("done")
 
 def read_from_pickle(path):
@@ -110,15 +112,19 @@ def calculate_height(moves:List[str]) -> float:
                 height += 1/15
             elif  move[0] == "K":
                 height += 1/3
+            elif  move == "O-O":
+                height += 1/3 + 1/10
+            elif  move == "O-O-O":
+                height += 1/3 + 1/10
             else:
-                print(move[0])
+                print(move, "da")
                 exit()
     return round(height, 2)
 def main():
 
     game_moves = []
-
     for game in read_from_pickle('data/data1000_1200.pickle'):
+
         game_moves.append(game.move_list)
     #
     # for game in read_from_pickle('data/data1200_1400.pickle'):
@@ -127,7 +133,11 @@ def main():
     # for game in read_from_pickle('data/data1400_1600.pickle'):
     #     game_moves.append(game.move_list)
 
+    # for game in read_from_pickle('data/data1600_1800.pickle'):
+    #     game_moves.append(game.move_list)
+
     # Number of clusters
+    number_of_moves = 5
     k = 3
     converter = ChessConverter()
     relevantData = []
@@ -136,12 +146,19 @@ def main():
     plt.rcParams["figure.autolayout"] = True
     coordsx = []
     coordsy = []
+    i=0
+    indexes = range(2 * number_of_moves)
     for moves in game_moves:
-        if len(moves) < 6:
+        if len(moves) < 2 * number_of_moves:
             continue
-        white = [moves[0],moves[2],moves[4]]
+        white = []
+        black = []
+        for move_index in indexes:
+            if move_index % 2 == 0:
+                white.append(moves[move_index])
+            else:
+                black.append(moves[move_index])
         whiteHeight = calculate_height(white)
-        black = [moves[1],moves[3],moves[5]]
         blackHeight = calculate_height(black)
         relevantData.append([whiteHeight,blackHeight,white,black])
         coordsx.append(whiteHeight)
