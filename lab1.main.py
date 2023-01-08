@@ -120,6 +120,40 @@ def calculate_height(moves:List[str]) -> float:
                 print(move, "da")
                 exit()
     return round(height, 2)
+
+def show(filename:str):
+    game_moves = []
+    for game in read_from_pickle(filename):
+        game_moves.append(game.move_list)
+    number_of_moves = 5
+
+    relevantData = []
+    stats = []
+    plt.rcParams["figure.figsize"] = [7.00, 3.50]
+    plt.rcParams["figure.autolayout"] = True
+    coordsx = []
+    coordsy = []
+    i = 0
+    indexes = range(2 * number_of_moves)
+    for moves in game_moves:
+        if len(moves) < 2 * number_of_moves:
+            continue
+        white = []
+        black = []
+        for move_index in indexes:
+            if move_index % 2 == 0:
+                white.append(moves[move_index])
+            else:
+                black.append(moves[move_index])
+        whiteHeight = calculate_height(white)
+        blackHeight = calculate_height(black)
+        relevantData.append([whiteHeight, blackHeight, white, black])
+        coordsx.append(whiteHeight)
+        coordsy.append(blackHeight)
+    plt.scatter(coordsx, coordsy)
+    plt.show()
+    plt.clf()
+
 def main():
 
     game_moves = []
@@ -137,34 +171,16 @@ def main():
     #     game_moves.append(game.move_list)
 
     # Number of clusters
-    number_of_moves = 5
     k = 3
     converter = ChessConverter()
-    relevantData = []
-    stats = []
-    plt.rcParams["figure.figsize"] = [7.00, 3.50]
-    plt.rcParams["figure.autolayout"] = True
-    coordsx = []
-    coordsy = []
-    i=0
-    indexes = range(2 * number_of_moves)
-    for moves in game_moves:
-        if len(moves) < 2 * number_of_moves:
-            continue
-        white = []
-        black = []
-        for move_index in indexes:
-            if move_index % 2 == 0:
-                white.append(moves[move_index])
-            else:
-                black.append(moves[move_index])
-        whiteHeight = calculate_height(white)
-        blackHeight = calculate_height(black)
-        relevantData.append([whiteHeight,blackHeight,white,black])
-        coordsx.append(whiteHeight)
-        coordsy.append(blackHeight)
-    plt.scatter(coordsx, coordsy)
-    plt.show()
+    filename = 'data/data1000_1200.pickle'
+    show(filename)
+    filename = 'data/data1200_1400.pickle'
+    show(filename)
+    filename = 'data/data1400_1600.pickle'
+    show(filename)
+    filename = 'data/data1600_1800.pickle'
+    show(filename)
 
 if __name__ == "__main__":
     main()

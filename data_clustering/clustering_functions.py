@@ -10,13 +10,13 @@ from data_clustering.mean import Mean
 class Distance(ABC):
     @classmethod
     @abstractmethod
-    def get_distance(first_move: Tuple[int,int], second_move: Tuple[int, int]) -> float:
+    def get_distance(self, first_move: Tuple[int,int], second_move: Tuple[int, int]) -> float:
         pass
 
 class Clustering(ABC):
     @classmethod
     @abstractmethod
-    def cluster(move_list: List[Tuple[int, int]], number_of_clusters: int) -> List[float]:
+    def cluster(self, move_list: List[Tuple[int, int]], number_of_clusters: int) -> List[float]:
         pass
 
 class ChebyshevDistance(Distance):
