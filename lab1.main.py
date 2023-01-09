@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from requests import JSONDecodeError
 
 from APIs.chesscom import ChessAPI
-from data_clustering.clustering_convertions import ChessConverter
+from data_clustering.clustering_functions import EuclidianDistance, KMeansClustering, KNearestNeighborClustering
 from models.game import Game, GamePlayer
 
 # k-means with 3/4/5 and clustering with 5
@@ -121,45 +121,88 @@ def calculate_height(moves:List[str]) -> float:
                 exit()
     return round(height, 2)
 
-def show(filename:str):
-    game_moves = []
+def get_relvent_data(filename:str, number_of_moves:int) -> List[Tuple[float, float]]:
+    relevant_data = []
     for game in read_from_pickle(filename):
-        game_moves.append(game.move_list)
-    number_of_moves = 5
+        list_of_moves = game.move_list
+        if len(list_of_moves) < 2 * number_of_moves :
+            continue
+        white = []
+        black = []
+        index_of_moves = range(0, 2 * number_of_moves)
+        for index in index_of_moves:
+            if index % 2 == 0:
+                white.append(list_of_moves[index])
+            else:
+                black.append(list_of_moves[index])
+        whiteHeight = calculate_height(white)
+        blackHeight = calculate_height(black)
+        relevant_data.append([whiteHeight, blackHeight])
+    return relevant_data
 
-    relevantData = []
+def show(relevantData:List[Tuple[float, float]], circles:List[Tuple[Tuple[float, float], int]]):
     stats = []
     plt.rcParams["figure.figsize"] = [7.00, 3.50]
     plt.rcParams["figure.autolayout"] = True
     coordsx = []
     coordsy = []
-    i = 0
-    indexes = range(2 * number_of_moves)
-    for moves in game_moves:
-        if len(moves) < 2 * number_of_moves:
-            continue
-        white = []
-        black = []
-        for move_index in indexes:
-            if move_index % 2 == 0:
-                white.append(moves[move_index])
-            else:
-                black.append(moves[move_index])
-        whiteHeight = calculate_height(white)
-        blackHeight = calculate_height(black)
-        relevantData.append([whiteHeight, blackHeight, white, black])
-        coordsx.append(whiteHeight)
-        coordsy.append(blackHeight)
+    fig, ax = plt.subplots()
+    for circle in circles:
+        ax.add_patch(plt.Circle((circle[0][0], circle[0][1]), circle[1], color='r', fill=False))
+    for moves in relevantData:
+        coordsx.append(moves[0])
+        coordsy.append(moves[1])
     plt.scatter(coordsx, coordsy)
     plt.show()
     plt.clf()
 
+def show_plots(centroids, clusters, relevant_data):
+    centers = []
+    for [number, centroid] in centroids.items():
+        distanceX = 0
+        distanceY = 0
+        for move in clusters[number]:
+            tempDistX = abs(move[0] - centroid[0])
+            tempDistY = abs(move[1] - centroid[1])
+            if tempDistX > distanceX:
+                distanceX = tempDistX
+            if tempDistY > distanceY:
+                distanceY = tempDistY
+        centers.append([centroid, round(max(distanceX, distanceY), 2)])
+    show(relevant_data, centers)
+def show_plots2(centroids, clusters, relevant_data):
+    centers = []
+    number = 0
+    for centroid in centroids:
+        distanceX = 0
+        distanceY = 0
+        for move in clusters[number]:
+            tempDistX = abs(move[0] - centroid[0])
+            tempDistY = abs(move[1] - centroid[1])
+            if tempDistX > distanceX:
+                distanceX = tempDistX
+            if tempDistY > distanceY:
+                distanceY = tempDistY
+        centers.append([centroid, round(max(distanceX, distanceY), 2)])
+        number += 1
+    show(relevant_data, centers)
+def show_data(filename:str, number_of_moves:int):
+    relevant_data = get_relvent_data(filename, number_of_moves)
+    show(relevant_data, [])
+    kmeans = KMeansClustering(EuclidianDistance())
+    centroids1, clusters1 = kmeans.cluster(relevant_data, 5)
+    show_plots2(centroids1, clusters1, relevant_data)
+
+    knearest = KNearestNeighborClustering(EuclidianDistance())
+    centroids2, clusters2 = knearest.cluster(relevant_data, 5)
+    show_plots(centroids2, clusters2, relevant_data)
 def main():
+    show_data('data/data1000_1200.pickle', 5)
+    show_data('data/data1200_1400.pickle', 5)
+    show_data('data/data1400_1600.pickle', 5)
+    show_data('data/data1600_1800.pickle', 5)
 
-    game_moves = []
-    for game in read_from_pickle('data/data1000_1200.pickle'):
 
-        game_moves.append(game.move_list)
     #
     # for game in read_from_pickle('data/data1200_1400.pickle'):
     #     game_moves.append(game.move_list)
@@ -172,15 +215,15 @@ def main():
 
     # Number of clusters
     k = 3
-    converter = ChessConverter()
-    filename = 'data/data1000_1200.pickle'
-    show(filename)
-    filename = 'data/data1200_1400.pickle'
-    show(filename)
-    filename = 'data/data1400_1600.pickle'
-    show(filename)
-    filename = 'data/data1600_1800.pickle'
-    show(filename)
+    # converter = ChessConverter()
+    # filename = 'data/data1000_1200.pickle'
+    # show(filename)
+    # filename = 'data/data1200_1400.pickle'
+    # show(filename)
+    # filename = 'data/data1400_1600.pickle'
+    # show(filename)
+    # filename = 'data/data1600_1800.pickle'
+    # show(filename)
 
 if __name__ == "__main__":
     main()
